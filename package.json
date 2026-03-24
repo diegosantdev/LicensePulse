@@ -1,0 +1,51 @@
+{
+  "name": "licensepulse",
+  "version": "1.0.0",
+  "description": "Monitor GitHub repositories for license changes and get alerted before it becomes your problem",
+  "main": "src/cli.js",
+  "bin": {
+    "licensepulse": "./bin/licensepulse.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "license",
+    "monitoring",
+    "github",
+    "compliance",
+    "spdx",
+    "open-source",
+    "license-scanner",
+    "oss",
+    "watchdog"
+  ],
+  "author": {
+    "name": "Diego Sant",
+    "url": "https://github.com/diegosantdev"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegosantdev/licensepulse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diegosantdev/licensepulse/issues"
+  },
+  "homepage": "https://github.com/diegosantdev/licensepulse#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

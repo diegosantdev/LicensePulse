@@ -1,0 +1,348 @@
+{
+  "MIT": {
+    "spdxId": "MIT",
+    "name": "MIT License",
+    "url": "https://spdx.org/licenses/MIT.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Permissive license with no restrictions on use, distribution, or modification. Attribution required."
+  },
+
+  "Apache-2.0": {
+    "spdxId": "Apache-2.0",
+    "name": "Apache License 2.0",
+    "url": "https://spdx.org/licenses/Apache-2.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Permissive license with explicit patent grant. Attribution and license notice required."
+  },
+
+  "BSD-2-Clause": {
+    "spdxId": "BSD-2-Clause",
+    "name": "BSD 2-Clause \"Simplified\" License",
+    "url": "https://spdx.org/licenses/BSD-2-Clause.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Permissive license requiring attribution in source and binary forms."
+  },
+
+  "BSD-3-Clause": {
+    "spdxId": "BSD-3-Clause",
+    "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+    "url": "https://spdx.org/licenses/BSD-3-Clause.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Permissive license. Adds clause prohibiting use of project name for endorsement."
+  },
+
+  "ISC": {
+    "spdxId": "ISC",
+    "name": "ISC License",
+    "url": "https://spdx.org/licenses/ISC.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Functionally equivalent to MIT. Simple permissive license."
+  },
+
+  "Unlicense": {
+    "spdxId": "Unlicense",
+    "name": "The Unlicense",
+    "url": "https://spdx.org/licenses/Unlicense.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Dedication to public domain. No restrictions whatsoever."
+  },
+
+  "CC0-1.0": {
+    "spdxId": "CC0-1.0",
+    "name": "Creative Commons Zero v1.0 Universal",
+    "url": "https://spdx.org/licenses/CC0-1.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Public domain dedication. No copyright reserved."
+  },
+
+  "MPL-2.0": {
+    "spdxId": "MPL-2.0",
+    "name": "Mozilla Public License 2.0",
+    "url": "https://spdx.org/licenses/MPL-2.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "FILE",
+      "sourceRequired": true
+    },
+    "summary": "Weak copyleft at file level. Modified files must remain MPL. Can be combined with proprietary code."
+  },
+
+  "LGPL-2.1": {
+    "spdxId": "LGPL-2.1",
+    "name": "GNU Lesser General Public License v2.1",
+    "url": "https://spdx.org/licenses/LGPL-2.1.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "LIBRARY",
+      "sourceRequired": true
+    },
+    "summary": "Weak copyleft. Can be linked from proprietary software. Modifications to the library itself must be shared."
+  },
+
+  "LGPL-3.0": {
+    "spdxId": "LGPL-3.0",
+    "name": "GNU Lesser General Public License v3.0",
+    "url": "https://spdx.org/licenses/LGPL-3.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "LIBRARY",
+      "sourceRequired": true
+    },
+    "summary": "Same as LGPL-2.1 but based on GPL-3. Adds patent termination and anti-tivoization clauses."
+  },
+
+  "GPL-2.0": {
+    "spdxId": "GPL-2.0",
+    "name": "GNU General Public License v2.0",
+    "url": "https://spdx.org/licenses/GPL-2.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "PROJECT",
+      "sourceRequired": true
+    },
+    "summary": "Strong copyleft. Any software that includes GPL-2.0 code must also be GPL-2.0. Source must be distributed."
+  },
+
+  "GPL-3.0": {
+    "spdxId": "GPL-3.0",
+    "name": "GNU General Public License v3.0",
+    "url": "https://spdx.org/licenses/GPL-3.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "ALLOWED"
+    },
+    "conditions": {
+      "copyleftScope": "PROJECT",
+      "sourceRequired": true
+    },
+    "summary": "Strong copyleft with patent and anti-tivoization protections. Source distribution required."
+  },
+
+  "AGPL-3.0": {
+    "spdxId": "AGPL-3.0",
+    "name": "GNU Affero General Public License v3.0",
+    "url": "https://spdx.org/licenses/AGPL-3.0.html",
+    "permissions": {
+      "commercialUse": "ALLOWED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "RESTRICTED"
+    },
+    "conditions": {
+      "copyleftScope": "PROJECT",
+      "sourceRequired": true
+    },
+    "summary": "Like GPL-3.0 but closes the SaaS loophole. Running modified AGPL software over a network requires sharing source."
+  },
+
+  "SSPL-1.0": {
+    "spdxId": "SSPL-1.0",
+    "name": "Server Side Public License v1",
+    "url": "https://spdx.org/licenses/SSPL-1.0.html",
+    "permissions": {
+      "commercialUse": "RESTRICTED",
+      "distribution": "RESTRICTED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "BLOCKED"
+    },
+    "conditions": {
+      "copyleftScope": "PROJECT",
+      "sourceRequired": true
+    },
+    "summary": "Created by MongoDB. If you offer the software as a service, you must open source your ENTIRE stack — including management services, monitoring, backups, etc. Effectively blocks commercial SaaS use.",
+    "realWorldImpact": "MongoDB (2018), Elasticsearch (2021) switched to this. Cloud providers (AWS, GCP, Azure) forked or dropped support rather than comply."
+  },
+
+  "BSL-1.1": {
+    "spdxId": "BSL-1.1",
+    "name": "Business Source License 1.1",
+    "url": "https://mariadb.com/bsl11/",
+    "permissions": {
+      "commercialUse": "RESTRICTED",
+      "distribution": "RESTRICTED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "BLOCKED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Source is available but commercial use is restricted until a specified date (usually 4 years after release), after which it converts to an open source license. SaaS use is blocked during restriction period.",
+    "realWorldImpact": "HashiCorp (Terraform, Vault, Consul) switched from MPL-2.0 to BSL-1.1 in 2023. Triggered OpenTofu fork by the community."
+  },
+
+  "RSALv2": {
+    "spdxId": "RSALv2",
+    "name": "Redis Source Available License v2",
+    "url": "https://redis.com/legal/rsalv2-agreement/",
+    "permissions": {
+      "commercialUse": "RESTRICTED",
+      "distribution": "RESTRICTED",
+      "modification": "RESTRICTED",
+      "patentUse": "BLOCKED",
+      "privateUse": "ALLOWED",
+      "saasUse": "BLOCKED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Source available but NOT open source. Prohibits using the software to compete with Redis Ltd. Cloud providers and competing database services are explicitly blocked.",
+    "realWorldImpact": "Redis switched from BSD-3-Clause to RSALv2 + SSPLv1 in 2024. AWS, GCP, Azure announced Valkey fork (now Linux Foundation project) in response."
+  },
+
+  "CCL-1.0": {
+    "spdxId": "CCL-1.0",
+    "name": "CockroachDB Community License",
+    "url": "https://www.cockroachlabs.com/docs/stable/licensing-faqs.html",
+    "permissions": {
+      "commercialUse": "RESTRICTED",
+      "distribution": "ALLOWED",
+      "modification": "ALLOWED",
+      "patentUse": "ALLOWED",
+      "privateUse": "ALLOWED",
+      "saasUse": "BLOCKED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Source available license that allows most uses except offering CockroachDB as a service. Cannot compete with Cockroach Labs' managed service.",
+    "realWorldImpact": "CockroachDB uses dual licensing: Apache 2.0 for core + CCL for enterprise features. Similar to MongoDB's SSPL strategy."
+  },
+
+  "CSL": {
+    "spdxId": "CSL",
+    "name": "CockroachDB Software License",
+    "url": "https://www.cockroachlabs.com/docs/stable/licensing-faqs.html",
+    "permissions": {
+      "commercialUse": "RESTRICTED",
+      "distribution": "RESTRICTED",
+      "modification": "ALLOWED",
+      "patentUse": "RESTRICTED",
+      "privateUse": "ALLOWED",
+      "saasUse": "BLOCKED"
+    },
+    "conditions": {
+      "copyleftScope": "NONE",
+      "sourceRequired": false
+    },
+    "summary": "Proprietary source-available license. Commercial use and SaaS deployment require a paid license from Cockroach Labs.",
+    "realWorldImpact": "CockroachDB switched to CSL in November 2024, replacing CCL-1.0 with more restrictive terms."
+  }
+}
