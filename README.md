@@ -6,8 +6,16 @@
   <p>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-a855f7?style=flat-square" alt="License"/></a>
     <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18-a855f7?style=flat-square" alt="Node"/></a>
-    <img src="https://img.shields.io/badge/tests-109%20passing-22d3a0?style=flat-square" alt="Tests"/>
+    <img src="https://img.shields.io/badge/version-1.2.0-a855f7?style=flat-square" alt="Version"/>
+    <a href="https://github.com/diegosantdev/licensepulse/actions"><img src="https://img.shields.io/github/actions/workflow/status/diegosantdev/licensepulse/ci.yml?branch=main&style=flat-square" alt="CI Status"/></a>
+    <img src="https://img.shields.io/badge/tests-141%20passing-22d3a0?style=flat-square" alt="Tests"/>
+    <img src="https://img.shields.io/badge/coverage-85%25-22d3a0?style=flat-square" alt="Coverage"/>
     <img src="https://img.shields.io/badge/licenses%20tracked-42+-a855f7?style=flat-square" alt="Licenses"/>
+  </p>
+  <p>
+    <strong>🆕 v1.2.0:</strong> Direct LICENSE file monitoring + Dependency graph analysis
+    <br/>
+    <a href="./UPDATES.md">See what's new →</a>
   </p>
 </div>
 
@@ -32,9 +40,45 @@ When MongoDB, Redis, HashiCorp, and Elasticsearch changed their licenses, thousa
 
 ## What It Looks Like
 
+### License Detection with Warnings
+
 <div align="center">
-  <img src="./library/out.png" alt="LicensePulse output" width="680" />
+  <img src="./library/out2.png" alt="License check with restricted warnings" width="600" />
 </div>
+
+Instantly identifies restrictive licenses across your dependencies.
+
+### Risk Analysis
+
+<div align="center">
+  <img src="./library/out3.png" alt="Risk analysis for Terraform" width="600" />
+</div>
+
+Risk scoring with automatic alternative suggestions (Terraform → OpenTofu).
+
+<div align="center">
+  <img src="./library/out4.png" alt="Risk analysis for Redis" width="600" />
+</div>
+
+Consistent pattern detection (Redis → Valkey).
+
+### Auto-Import Dependencies
+
+<div align="center">
+  <img src="./library/out5.png" alt="Auto-import from package.json" width="600" />
+</div>
+
+Zero-friction onboarding - discovers all dependencies automatically.
+
+### Dependency Graph Analysis
+
+<div align="center">
+  <img src="./library/out6.png" alt="Dependency tree for Express" width="600" />
+</div>
+
+Complete transitive dependency analysis (22 dependencies discovered for Express).
+
+---
 
 When a license changes, LicensePulse doesn't just say *"it changed"*. It tells you what you could do before and what you can't do now.
 
@@ -73,7 +117,11 @@ Get a GitHub token at [github.com/settings/tokens](https://github.com/settings/t
 | `add <repo>` | Add repo to watchlist |
 | `remove <repo>` | Remove repo from watchlist |
 | `list` | List all monitored repos |
-| `diff <repo>` | Show last known license change |
+| `diff <repo>` | Show last known license change with version cutoff |
+| `import` | Auto-import dependencies from package.json/requirements.txt |
+| `risk <repo>` | Show risk score and analysis for a repository |
+| `monitor-file <repo>` | Monitor LICENSE file changes directly in GitHub 🆕 |
+| `deps <package>` | Show dependency tree and transitive dependencies 🆕 |
 | `report` | Generate JSON report |
 
 ### `check`
@@ -102,6 +150,7 @@ Get a GitHub token at [github.com/settings/tokens](https://github.com/settings/t
 ╚════════════════════════════════════════════════════════════╝
 
   🚨  hashicorp/terraform          MPL-2.0 → BSL-1.1
+       Safe up to: v1.5.7 │ Changed in: v1.6.0
 
 
   ═══ IMPACT ANALYSIS ════════════════════════════════════
@@ -122,6 +171,57 @@ Get a GitHub token at [github.com/settings/tokens](https://github.com/settings/t
 
      → Full license text: https://github.com/hashicorp/terraform/blob/main/LICENSE
      → Open source alternative: OpenTofu (https://github.com/opentofu/opentofu)
+       Community fork after Terraform switched to BSL-1.1
+```
+
+### `import`
+
+Auto-discover and add all your dependencies to the watchlist:
+
+```bash
+# Dry run to see what would be imported
+node bin/licensepulse.js import --dry-run
+
+# Import from current directory
+node bin/licensepulse.js import
+
+# Import from specific directory
+node bin/licensepulse.js import --directory ./my-project
+```
+
+Supports:
+- `package.json` (npm dependencies)
+- `requirements.txt` (Python dependencies)
+
+### `risk <repo>`
+
+Get a risk score based on license history and patterns:
+
+```
+╔════════════════════════════════════════════════════════════╗
+║  LicensePulse • Risk Analysis: hashicorp/terraform         ║
+╚════════════════════════════════════════════════════════════╝
+
+  Risk Score:              70/100
+  Risk Level:              HIGH
+  Current License:         BSL-1.1
+
+  ═══ Risk Factors ═══════════════════════════════════════
+
+  ⚠ License changed previously (+40 points)
+     MPL-2.0 → BSL-1.1
+  
+  ⚠ Currently uses restrictive license (+30 points)
+     BSL-1.1
+
+  ═══ Recommended Alternative ════════════════════════════
+
+  OpenTofu (MPL-2.0)
+  Community fork after Terraform switched to BSL-1.1
+  → Repository: https://github.com/opentofu/opentofu
+
+  ⚠ HIGH RISK: Consider monitoring this repository closely 
+     or switching to an alternative.
 ```
 
 ### `report`
@@ -256,7 +356,41 @@ LicensePulse would have alerted you the day each of these happened.
 
 Dependabot tracks security vulnerabilities and version updates. It does not monitor license changes. Neither does Snyk, FOSSA, or any popular open source tool in active use today.
 
-LicensePulse does one thing: watches licenses on repos you depend on and explains what a change means for your business.
+**LicensePulse is the only tool that:**
+- Shows exactly which version the license changed in
+- Monitors the LICENSE file directly in the repo (catches changes before npm/PyPI publish)
+- Auto-imports your dependencies from package.json/requirements.txt
+- Calculates risk scores based on license change history
+- Suggests open source alternatives automatically
+
+---
+
+## What's New in v1.1
+
+Based on community feedback:
+
+**Version Cutoff** - Shows exactly which version is safe to use and which version introduced the license change.
+
+```
+hashicorp/terraform    MPL-2.0 → BSL-1.1
+Safe up to: v1.5.7 │ Changed in: v1.6.0
+```
+
+**GitHub Repo Monitoring** - Monitors the LICENSE file directly in the repository, not just published packages. Catches changes in the window between commit and npm/PyPI publish (exactly where Redis and HashiCorp cases happened).
+
+**Auto-Import** - Detects dependencies from package.json and requirements.txt automatically. No more adding repos one by one.
+
+```bash
+licensepulse import
+# Discovers all your dependencies and adds them to watchlist
+```
+
+**Risk Scoring** - Calculates risk score (0-100) based on license history. Repos that changed once are more likely to change again.
+
+```bash
+licensepulse risk hashicorp/terraform
+# Risk Score: 70/100 (HIGH)
+```
 
 ---
 
@@ -282,17 +416,6 @@ licensepulse/
 │   └── snapshots/      # Auto-generated (gitignored)
 └── watchlist.json      # Your monitored repos
 ```
-
----
-
-## Roadmap
-
-- [ ] `npm install -g licensepulse` global install
-- [ ] `package.json` auto-import to detect all deps automatically
-- [ ] GitLab and Bitbucket support
-- [ ] Discord and Microsoft Teams notifications
-- [ ] License risk score per repo
-- [ ] Web dashboard
 
 ---
 
