@@ -66,8 +66,12 @@ describe('Integration: Complete Workflow', () => {
     const firstCheck = await checkAndUpdate('redis/redis', firstLicense);
     expect(firstCheck.changed).toBe(false);
 
+    // Wait a bit for file system to sync
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     const snapshot1 = await loadSnapshot('redis/redis');
     expect(snapshot1).toBeDefined();
+    expect(snapshot1).not.toBeNull();
     expect(snapshot1.spdxId).toBe('BSD-3-Clause');
 
     axios.get.mockResolvedValueOnce({
@@ -118,6 +122,9 @@ describe('Integration: Complete Workflow', () => {
     const license2 = await fetchLicense('hashicorp/terraform');
     await checkAndUpdate('hashicorp/terraform', license2);
 
+    // Wait for file system sync
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     const snapshot1 = await loadSnapshot('redis/redis');
     const snapshot2 = await loadSnapshot('hashicorp/terraform');
 
@@ -136,6 +143,9 @@ describe('Integration: Complete Workflow', () => {
 
     const license1 = await fetchLicense('valid/repo');
     await checkAndUpdate('valid/repo', license1);
+
+    // Wait for file system sync
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     axios.get.mockRejectedValueOnce(new Error('Repository not found'));
 

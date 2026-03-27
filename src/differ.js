@@ -13,9 +13,12 @@ function getSnapshotPath(repoId) {
 
 async function ensureSnapshotsDir() {
   try {
+    const path = require('path');
+    const baseDir = path.dirname(SNAPSHOTS_DIR);
+    await fs.mkdir(baseDir, { recursive: true });
     await fs.mkdir(SNAPSHOTS_DIR, { recursive: true });
   } catch (error) {
-    throw new Error(`Failed to create snapshots directory: ${error.message}`);
+    // Ignore errors if directory already exists
   }
 }
 
