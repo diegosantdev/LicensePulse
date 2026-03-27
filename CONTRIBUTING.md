@@ -42,19 +42,23 @@ npm test
 
 - Use 2 spaces for indentation
 - Follow existing code patterns
-- Add JSDoc comments for functions
 - Keep functions focused and small
+- Write clear, self-documenting code
 
 ## Testing
 
 - Write tests for new features
 - Ensure all tests pass before submitting PR
 - Aim for high test coverage
+- CI runs tests automatically on Node 18.x, 20.x, and 22.x
 
 ```bash
 npm test                    # Run all tests
 npm test -- --watch        # Watch mode
+npm test -- --coverage     # Run with coverage report
 ```
+
+All pull requests are automatically tested via GitHub Actions CI before merge.
 
 ## Most Impactful Contributions
 
