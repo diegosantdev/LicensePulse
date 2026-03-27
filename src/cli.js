@@ -320,8 +320,8 @@ async function handleCheck() {
       const hasCriticalChanges = diff.changes.some(c => c.severity === 'CRITICAL');
       if (hasCriticalChanges) {
         const projectName = alert.repo.split('/')[1];
-        console.log(`  ${ui.icons.warning}  ${ui.colors.warning('LEGAL RISK: If you offer ' + projectName + ' as a service or')}`);
-        console.log(`     ${ui.colors.warning('distribute it commercially, you may now be in violation.')}`);
+        console.log(`  ${ui.icons.warning}  ${ui.colors.warning('LICENSE CHANGE IMPACT: Some usage models may now be restricted.')}`);
+        console.log(`     ${ui.colors.warning('Review the changes above and consult the license terms for your use case.')}`);
         ui.space();
       }
 
