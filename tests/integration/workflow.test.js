@@ -66,8 +66,8 @@ describe('Integration: Complete Workflow', () => {
     const firstCheck = await checkAndUpdate('redis/redis', firstLicense);
     expect(firstCheck.changed).toBe(false);
 
-    // Wait a bit for file system to sync
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait for file system to sync (longer wait for coverage runs)
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const snapshot1 = await loadSnapshot('redis/redis');
     expect(snapshot1).toBeDefined();
