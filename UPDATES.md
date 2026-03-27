@@ -86,7 +86,7 @@ licensepulse deps <package> --depth 3
 ### New Features
 
 #### 1. Version Cutoff Detection
-Shows exactly which version is safe to use and which version introduced the license change.
+Identifies which version is safe to use and which version introduced the license change (based on release tags and version history).
 
 **Display:**
 ```

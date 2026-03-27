@@ -24,7 +24,7 @@
 > *Redis changed its license. HashiCorp changed its license. Elasticsearch changed its license.*
 > *You found out too late.*
 >
-> **LicensePulse watches the OSS repos you depend on and tells you exactly what changed before it becomes your problem.**
+> **LicensePulse watches the OSS repos you depend on and shows you what changed so you can evaluate impact early.**
 
 ---
 
@@ -359,7 +359,7 @@ LicensePulse would have alerted you the day each of these happened.
 Dependabot tracks security vulnerabilities and version updates. It does not monitor license changes. Neither does Snyk, FOSSA, or any popular open source tool in active use today.
 
 **LicensePulse is the only tool that:**
-- Shows exactly which version the license changed in
+- Identifies which version the license changed in (when available from releases/tags)
 - Monitors the LICENSE file directly in the repo (catches changes before npm/PyPI publish)
 - Auto-imports your dependencies from package.json/requirements.txt
 - Calculates risk scores based on license change history
@@ -371,14 +371,14 @@ Dependabot tracks security vulnerabilities and version updates. It does not moni
 
 Based on community feedback:
 
-**Version Cutoff** - Shows exactly which version is safe to use and which version introduced the license change.
+**Version Cutoff** - Identifies which version is safe to use and which version introduced the license change (based on release tags and version history).
 
 ```
 hashicorp/terraform    MPL-2.0 → BSL-1.1
 Safe up to: v1.5.7 │ Changed in: v1.6.0
 ```
 
-**GitHub Repo Monitoring** - Monitors the LICENSE file directly in the repository, not just published packages. Catches changes in the window between commit and npm/PyPI publish (exactly where Redis and HashiCorp cases happened).
+**GitHub Repo Monitoring** - Monitors the LICENSE file directly in the repository, not just published packages. Catches changes in the window between commit and npm/PyPI publish (the window where Redis and HashiCorp cases happened).
 
 **Auto-Import** - Detects dependencies from package.json and requirements.txt automatically. No more adding repos one by one.
 
