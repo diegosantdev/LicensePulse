@@ -2,7 +2,7 @@
   <img src="./library/licensepulse.png" alt="LicensePulse" width="280" />
   <br/>
   <br/>
-  <p><strong>OSS license watchdog. Know before it's too late.</strong></p>
+  <p><strong>OSS license watchdog. Track changes early, decide with context.</strong></p>
   <p>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-a855f7?style=flat-square" alt="License"/></a>
     <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18-a855f7?style=flat-square" alt="Node"/></a>
@@ -38,7 +38,11 @@ When MongoDB, Redis, HashiCorp, and Elasticsearch changed their licenses, thousa
 
 ---
 
-## What It Looks Like
+## What It Does
+
+When a license changes, LicensePulse doesn't just say *"it changed"*. It shows you what changed, which usage models may be affected, and where closer review may be needed depending on your business model.
+
+---
 
 ### License Detection with Warnings
 
@@ -77,10 +81,6 @@ Zero-friction onboarding - discovers all dependencies automatically.
 </div>
 
 Complete transitive dependency analysis (22 dependencies discovered for Express).
-
----
-
-When a license changes, LicensePulse doesn't just say *"it changed"*. It tells you what you could do before and what you can't do now.
 
 ---
 
@@ -162,12 +162,12 @@ Get a GitHub token at [github.com/settings/tokens](https://github.com/settings/t
   ⚠ commercialUse          ALLOWED       →  RESTRICTED
   ⚠ distribution           ALLOWED       →  RESTRICTED
   ⚠ patentUse              ALLOWED       →  RESTRICTED
-  ⚠ saasUse                ALLOWED       →  BLOCKED
+  ⚠ saasUse                ALLOWED       →  REQUIRES_REVIEW
 
   ═══════════════════════════════════════════════════════════
 
-  ⚠  LEGAL RISK: If you offer terraform as a service or
-     distribute it commercially, you may now be in violation.
+  ⚠  LICENSE CHANGE IMPACT: Some usage models may now be restricted.
+     Review the changes above and consult the license terms for your use case.
 
      → Full license text: https://github.com/hashicorp/terraform/blob/main/LICENSE
      → Open source alternative: OpenTofu (https://github.com/opentofu/opentofu)
@@ -243,7 +243,7 @@ node bin/licensepulse.js report --output report.json
       "changed_at": "2023-08-10T14:30:00Z",
       "impact": {
         "commercialUse": "RESTRICTED",
-        "saasUse": "BLOCKED",
+        "saasUse": "REQUIRES_REVIEW",
         "distribution": "RESTRICTED"
       }
     }
@@ -343,12 +343,14 @@ When a license changes, LicensePulse diffs only the attributes that changed, not
 
 | Project | Year | Change | Impact |
 |---------|------|--------|--------|
-| **Redis** | 2024 | BSD-3-Clause → RSALv2 + SSPL-1.0 | Commercial use restricted, SaaS blocked |
-| **HashiCorp Terraform** | 2023 | MPL-2.0 → BSL-1.1 | SaaS blocked, commercial restricted |
-| **Elasticsearch** | 2021 | Apache-2.0 → SSPL-1.0 | Cloud hosting restricted |
-| **MongoDB** | 2018 | AGPL-3.0 → SSPL-1.0 | SaaS use blocked |
+| **Redis** | 2024 | BSD-3-Clause → RSALv2 + SSPL-1.0 | Competitive and hosted use cases require review |
+| **HashiCorp Terraform** | 2023 | MPL-2.0 → BSL-1.1 | Some commercial and hosted use cases restricted |
+| **Elasticsearch** | 2021 | Apache-2.0 → SSPL-1.0 | Managed service offerings require review |
+| **MongoDB** | 2018 | AGPL-3.0 → SSPL-1.0 | SaaS use cases require careful review |
 
 LicensePulse would have alerted you the day each of these happened.
+
+**Note:** LicensePulse surfaces practical license-change impact to help teams stay informed. It is not legal advice. Consult your legal team for guidance on how license changes affect your specific use case.
 
 ---
 
