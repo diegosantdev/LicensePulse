@@ -46,6 +46,10 @@ describe('Explainer', () => {
       expect(calculateSeverity('ALLOWED', 'BLOCKED')).toBe('CRITICAL');
     });
 
+    test('returns CRITICAL for ALLOWED to REQUIRES_REVIEW', () => {
+      expect(calculateSeverity('ALLOWED', 'REQUIRES_REVIEW')).toBe('CRITICAL');
+    });
+
     test('returns WARNING for ALLOWED to RESTRICTED', () => {
       expect(calculateSeverity('ALLOWED', 'RESTRICTED')).toBe('WARNING');
     });
@@ -58,8 +62,16 @@ describe('Explainer', () => {
       expect(calculateSeverity('BLOCKED', 'ALLOWED')).toBe('INFO');
     });
 
+    test('returns INFO for REQUIRES_REVIEW to ALLOWED', () => {
+      expect(calculateSeverity('REQUIRES_REVIEW', 'ALLOWED')).toBe('INFO');
+    });
+
     test('returns WARNING for RESTRICTED to BLOCKED', () => {
       expect(calculateSeverity('RESTRICTED', 'BLOCKED')).toBe('WARNING');
+    });
+
+    test('returns WARNING for RESTRICTED to REQUIRES_REVIEW', () => {
+      expect(calculateSeverity('RESTRICTED', 'REQUIRES_REVIEW')).toBe('WARNING');
     });
   });
 
@@ -129,7 +141,7 @@ describe('Explainer', () => {
       const saasChange = diff.changes.find(c => c.attribute === 'saasUse');
       expect(saasChange).toBeDefined();
       expect(saasChange.oldValue).toBe('ALLOWED');
-      expect(saasChange.newValue).toBe('BLOCKED');
+      expect(saasChange.newValue).toBe('REQUIRES_REVIEW');
     });
 
     test('real case: Redis (BSD-3-Clause to RSALv2)', () => {
@@ -148,7 +160,7 @@ describe('Explainer', () => {
 
       const saasChange = diff.changes.find(c => c.attribute === 'saasUse');
       expect(saasChange).toBeDefined();
-      expect(saasChange.newValue).toBe('BLOCKED');
+      expect(saasChange.newValue).toBe('REQUIRES_REVIEW');
     });
   });
 

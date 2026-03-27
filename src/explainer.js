@@ -10,7 +10,7 @@ function getLicensePermissions(spdxId) {
 
 function calculateSeverity(oldValue, newValue) {
 
-  if (oldValue === 'ALLOWED' && newValue === 'BLOCKED') {
+  if (oldValue === 'ALLOWED' && (newValue === 'BLOCKED' || newValue === 'REQUIRES_REVIEW')) {
     return 'CRITICAL';
   }
 
@@ -18,11 +18,11 @@ function calculateSeverity(oldValue, newValue) {
     return 'WARNING';
   }
 
-  if ((oldValue === 'RESTRICTED' || oldValue === 'BLOCKED') && newValue === 'ALLOWED') {
+  if ((oldValue === 'RESTRICTED' || oldValue === 'BLOCKED' || oldValue === 'REQUIRES_REVIEW') && newValue === 'ALLOWED') {
     return 'INFO';
   }
 
-  if (oldValue === 'RESTRICTED' && newValue === 'BLOCKED') {
+  if (oldValue === 'RESTRICTED' && (newValue === 'BLOCKED' || newValue === 'REQUIRES_REVIEW')) {
     return 'WARNING';
   }
 
