@@ -5,6 +5,11 @@ const { fetchLicense } = require('./watcher');
 const { checkAndUpdate, loadSnapshot } = require('./differ');
 const { generateImpactDiff, formatImpact } = require('./explainer');
 const { loadConfig } = require('./config');
+const { getVersionCutoff } = require('./version-tracker');
+const { calculateRiskScore, suggestAlternatives } = require('./risk-scorer');
+const { autoImport } = require('./package-importer');
+const { checkLicenseFileChange, getLicenseFileHistory } = require('./license-monitor');
+const { getTransitiveDependencies, formatDependencyTree } = require('./dependency-graph');
 const ui = require('./ui');
 
 const program = new Command();
@@ -27,7 +32,7 @@ function isRestrictiveLicense(spdxId) {
 program
   .name('licensepulse')
   .description('Monitor GitHub repositories for license changes')
-  .version('1.0.0');
+  .version('1.2.0');
 
 program
   .command('check')
@@ -114,6 +119,58 @@ program
     }
   });
 
+program
+  .command('import')
+  .description('Auto-import dependencies from package.json or requirements.txt')
+  .option('-d, --directory <path>', 'Directory to scan (default: current directory)', '.')
+  .option('--dry-run', 'Show what would be imported without adding to watchlist')
+  .action(async (options) => {
+    try {
+      await handleImport(options);
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('risk <repo>')
+  .description('Show risk score and analysis for a repository')
+  .action(async (repo) => {
+    try {
+      await handleRisk(repo);
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('monitor-file <repo>')
+  .description('Check if LICENSE file changed directly in GitHub repo')
+  .action(async (repo) => {
+    try {
+      await handleMonitorFile(repo);
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('deps <package>')
+  .description('Show dependency tree and transitive license risks')
+  .option('-e, --ecosystem <type>', 'Package ecosystem (npm or pypi)', 'npm')
+  .option('-d, --depth <number>', 'Tree depth (default: 2)', '2')
+  .action(async (packageName, options) => {
+    try {
+      await handleDeps(packageName, options);
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
 async function handleCheck() {
 
   const config = loadConfig();
@@ -149,12 +206,17 @@ async function handleCheck() {
 
       if (change.changed) {
         alertCount++;
+        
+        // Load snapshot to get change date
+        const snapshot = await loadSnapshot(repo);
+        
         results.push({
           repo,
           status: 'CHANGED',
           currentLicense: currentLicense.spdxId,
           previousLicense: change.oldLicense,
           newLicense: change.newLicense,
+          changedAt: snapshot?.changedAt,
           isUnknown
         });
       } else {
@@ -193,6 +255,19 @@ async function handleCheck() {
     for (const alert of alerts) {
       const repoName = alert.repo.padEnd(28, ' ');
       console.log(`  ${ui.icons.alert}  ${ui.colors.bright(repoName)} ${ui.colors.warning(alert.previousLicense)} ${ui.icons.arrow} ${ui.colors.error(alert.newLicense)}`);
+      
+      // Show version cutoff if available
+      const config = loadConfig();
+      const token = process.env.GITHUB_TOKEN;
+      if (token && alert.changedAt) {
+        try {
+          const versionInfo = await getVersionCutoff(alert.repo, alert.changedAt, token);
+          if (versionInfo && versionInfo.safeVersion) {
+            console.log(`  ${ui.colors.muted('     Safe up to:')} ${ui.colors.success(versionInfo.safeVersion)} ${ui.colors.muted('│')} ${ui.colors.error('Changed in:')} ${ui.colors.error(versionInfo.changedVersion || 'latest')}`);
+          }
+        } catch {}
+      }
+      
       ui.space();
 
       const diff = generateImpactDiff(alert.previousLicense, alert.newLicense);
@@ -258,7 +333,12 @@ async function handleCheck() {
         'elastic/elasticsearch': { url: 'https://github.com/opensearch-project/OpenSearch', name: 'OpenSearch' }
       };
 
-      if (forkLinks[alert.repo]) {
+      // Use new alternative suggestion system
+      const alternative = suggestAlternatives(alert.repo, alert.newLicense);
+      if (alternative) {
+        console.log(`     ${ui.icons.arrow} ${ui.colors.info('Open source alternative')}: ${ui.colors.bright(alternative.name)} ${ui.colors.dim('(' + alternative.url + ')')}`);
+        console.log(`        ${ui.colors.muted(alternative.reason)}`);
+      } else if (forkLinks[alert.repo]) {
         const fork = forkLinks[alert.repo];
         console.log(`     ${ui.icons.arrow} ${ui.colors.info('Open source alternative')}: ${ui.colors.bright(fork.name)} ${ui.colors.dim('(' + fork.url + ')')}`);
       }
@@ -505,6 +585,27 @@ async function handleDiff(repo) {
   ui.keyValue('Before', snapshot.previousSpdxId, ui.colors.warning);
   ui.keyValue('After', snapshot.spdxId, ui.colors.error);
   ui.keyValue('Changed at', new Date(snapshot.changedAt).toLocaleString(), ui.colors.muted);
+  
+  // Show version cutoff
+  const token = process.env.GITHUB_TOKEN;
+  if (token && snapshot.changedAt) {
+    try {
+      const versionInfo = await getVersionCutoff(repo, snapshot.changedAt, token);
+      if (versionInfo) {
+        ui.space();
+        ui.section('Version Information');
+        if (versionInfo.safeVersion) {
+          ui.keyValue('Safe up to', versionInfo.safeVersion, ui.colors.success);
+          ui.keyValue('Changed in', versionInfo.changedVersion || 'latest', ui.colors.error);
+        }
+        if (versionInfo.ecosystem !== 'github') {
+          ui.keyValue('Package', `${versionInfo.packageName} (${versionInfo.ecosystem})`, ui.colors.muted);
+        }
+      }
+    } catch (error) {
+      // Silently fail version lookup
+    }
+  }
 
   ui.space();
 
@@ -512,6 +613,120 @@ async function handleDiff(repo) {
   const formatted = formatImpact(diff);
 
   console.log(formatted);
+  ui.space();
+}
+
+async function handleImport(options) {
+  ui.header('Auto-importing dependencies');
+  
+  const result = await autoImport(options.directory);
+  
+  if (result.sources.length === 0) {
+    ui.info('No dependency files found (package.json or requirements.txt)');
+    ui.space();
+    return;
+  }
+  
+  ui.keyValue('Sources found', result.sources.join(', '), ui.colors.success);
+  ui.keyValue('Repos discovered', result.repos.length.toString(), ui.colors.bright);
+  
+  if (result.failed.length > 0) {
+    ui.keyValue('Failed to resolve', result.failed.length.toString(), ui.colors.warning);
+  }
+  
+  ui.space();
+  
+  if (result.repos.length === 0) {
+    ui.info('No GitHub repositories found in dependencies');
+    ui.space();
+    return;
+  }
+  
+  if (options.dryRun) {
+    ui.section('Would add to watchlist:');
+    result.repos.forEach((item, index) => {
+      console.log(`  ${index + 1}. ${ui.colors.bright(item.repo)} ${ui.colors.muted(`(${item.package} via ${item.ecosystem})`)}`);
+    });
+    ui.space();
+    return;
+  }
+  
+  // Add to watchlist
+  const watchlist = new Watchlist();
+  await watchlist.load();
+  
+  let added = 0;
+  let skipped = 0;
+  
+  for (const item of result.repos) {
+    const existing = watchlist.getAll();
+    if (existing.includes(item.repo)) {
+      skipped++;
+    } else {
+      await watchlist.add(item.repo);
+      added++;
+    }
+  }
+  
+  ui.space();
+  ui.success(`Added ${added} repositories to watchlist`);
+  if (skipped > 0) {
+    ui.info(`Skipped ${skipped} already in watchlist`);
+  }
+  ui.space();
+}
+
+async function handleRisk(repo) {
+  ui.header(`Risk Analysis: ${repo}`);
+  
+  // Load current license
+  const snapshot = await loadSnapshot(repo);
+  if (!snapshot) {
+    ui.info('No snapshot found. Run \'licensepulse check\' first.');
+    ui.space();
+    return;
+  }
+  
+  const riskAnalysis = await calculateRiskScore(repo, snapshot.spdxId);
+  
+  // Display risk score
+  const scoreColor = riskAnalysis.level === 'HIGH' ? ui.colors.error : 
+                     riskAnalysis.level === 'MEDIUM' ? ui.colors.warning : 
+                     ui.colors.success;
+  
+  ui.keyValue('Risk Score', `${riskAnalysis.score}/100`, scoreColor);
+  ui.keyValue('Risk Level', riskAnalysis.level, scoreColor);
+  ui.keyValue('Current License', snapshot.spdxId, ui.colors.bright);
+  
+  ui.space();
+  ui.section('Risk Factors');
+  
+  if (riskAnalysis.factors.length === 0) {
+    console.log(ui.colors.success('  ✓ No significant risk factors detected'));
+  } else {
+    riskAnalysis.factors.forEach(factor => {
+      console.log(`  ${ui.colors.warning('⚠')} ${ui.colors.bright(factor.factor)} ${ui.colors.muted(`(+${factor.points} points)`)}`);
+      console.log(`     ${ui.colors.muted(factor.detail)}`);
+    });
+  }
+  
+  ui.space();
+  
+  // Show alternative if available
+  const alternative = suggestAlternatives(repo, snapshot.spdxId);
+  if (alternative) {
+    ui.section('Recommended Alternative');
+    console.log(`  ${ui.colors.bright(alternative.name)} ${ui.colors.muted(`(${alternative.license})`)}`);
+    console.log(`  ${ui.colors.muted(alternative.reason)}`);
+    ui.link('Repository', alternative.url);
+    ui.space();
+  }
+  
+  if (riskAnalysis.level === 'HIGH') {
+    ui.space();
+    console.log(ui.colors.error('  ⚠ HIGH RISK: Consider monitoring this repository closely or switching to an alternative.'));
+  }
+  
   ui.space();
 }
 
@@ -532,5 +747,128 @@ module.exports = {
   handleRemove,
   handleList,
   handleDiff,
-  handleReport
+  handleReport,
+  handleImport,
+  handleRisk,
+  handleMonitorFile,
+  handleDeps
 };
+
+async function handleMonitorFile(repo) {
+  const token = process.env.GITHUB_TOKEN;
+  
+  if (!token) {
+    throw new Error('GITHUB_TOKEN environment variable is required');
+  }
+  
+  ui.header(`LICENSE File Monitor: ${repo}`);
+  
+  const change = await checkLicenseFileChange(repo, token);
+  
+  if (change.changed) {
+    ui.keyValue('Status', 'LICENSE file changed!', ui.colors.error);
+    ui.keyValue('File', change.filename, ui.colors.bright);
+    ui.keyValue('Old hash', change.oldHash.substring(0, 12) + '...', ui.colors.warning);
+    ui.keyValue('New hash', change.newHash.substring(0, 12) + '...', ui.colors.error);
+    
+    ui.space();
+    ui.section('Change Details');
+    console.log(`  ${ui.colors.muted('This change happened between:')}`);
+    console.log(`  ${ui.colors.muted('Last check:')} ${new Date(change.previousCheckedAt).toLocaleString()}`);
+    console.log(`  ${ui.colors.muted('Current check:')} ${new Date().toLocaleString()}`);
+    
+    ui.space();
+    ui.link('View LICENSE file', change.url);
+    
+    // Get commit history
+    const history = await getLicenseFileHistory(repo, token);
+    if (history.length > 0) {
+      ui.space();
+      ui.section('Recent LICENSE Commits');
+      history.slice(0, 3).forEach((commit, i) => {
+        console.log(`  ${i + 1}. ${new Date(commit.date).toLocaleDateString()} - ${commit.message.split('\n')[0]}`);
+        console.log(`     ${ui.colors.muted('by ' + commit.author)}`);
+      });
+    }
+    
+    ui.space();
+    console.log(ui.colors.error('  ⚠ WARNING: LICENSE file content changed!'));
+    console.log(ui.colors.muted('     Run ') + ui.colors.primary('licensepulse check') + ui.colors.muted(' to update SPDX detection.'));
+  } else {
+    ui.keyValue('Status', 'No changes detected', ui.colors.success);
+    
+    if (change.reason === 'No LICENSE file found') {
+      ui.keyValue('Reason', 'LICENSE file not found', ui.colors.warning);
+      ui.space();
+      console.log(ui.colors.muted('  ℹ  Possible reasons:'));
+      console.log(ui.colors.muted('     • LICENSE file is in a subdirectory'));
+      console.log(ui.colors.muted('     • Repo uses non-standard license structure'));
+      console.log(ui.colors.muted('     • Repository is private or access restricted'));
+      console.log(ui.colors.muted('     • License info only in package metadata'));
+      ui.space();
+      console.log(ui.colors.info('  💡 Tip: Use ') + ui.colors.primary('licensepulse check') + ui.colors.info(' to get SPDX license via GitHub API.'));
+      console.log(ui.colors.muted('     The check command uses GitHub\'s license detection which is more reliable.'));
+    } else {
+      ui.keyValue('Reason', change.reason || 'LICENSE file unchanged', ui.colors.muted);
+      
+      const stored = await require('./license-monitor').getStoredHash(repo);
+      if (stored) {
+        ui.keyValue('Last checked', new Date(stored.checkedAt).toLocaleString(), ui.colors.muted);
+        ui.keyValue('File hash', stored.hash.substring(0, 12) + '...', ui.colors.muted);
+        if (stored.detectionMethod) {
+          ui.keyValue('Detection method', stored.detectionMethod, ui.colors.muted);
+        }
+      }
+    }
+  }
+  
+  ui.space();
+}
+
+async function handleDeps(packageName, options) {
+  ui.header(`Dependency Analysis: ${packageName}`);
+  
+  console.log(ui.colors.muted(`  Analyzing ${options.ecosystem} dependencies...`));
+  ui.space();
+  
+  const { tree, allDependencies, count } = await getTransitiveDependencies(
+    packageName,
+    options.ecosystem,
+    parseInt(options.depth)
+  );
+  
+  ui.keyValue('Total dependencies', count.toString(), ui.colors.bright);
+  ui.keyValue('Depth analyzed', options.depth, ui.colors.muted);
+  
+  if (count === 0) {
+    ui.space();
+    console.log(ui.colors.success('  ✓ This package has no dependencies!'));
+    console.log(ui.colors.muted('     It\'s a standalone package with zero external dependencies.'));
+  }
+  
+  ui.space();
+  ui.section('Dependency Tree');
+  
+  const treeOutput = formatDependencyTree(tree, 0, parseInt(options.depth));
+  console.log(treeOutput);
+  
+  if (count > 0) {
+    ui.space();
+    ui.section('All Dependencies');
+    
+    // Show first 20 dependencies
+    const depsToShow = allDependencies.slice(0, 20);
+    depsToShow.forEach((dep, i) => {
+      console.log(`  ${(i + 1).toString().padStart(2, ' ')}. ${dep}`);
+    });
+    
+    if (allDependencies.length > 20) {
+      console.log(`  ${ui.colors.muted(`... and ${allDependencies.length - 20} more`)}`);
+    }
+    
+    ui.space();
+    console.log(ui.colors.info('  💡 Tip: Use ') + ui.colors.primary('licensepulse import') + ui.colors.info(' to monitor these dependencies.'));
+  }
+  
+  ui.space();
+}
