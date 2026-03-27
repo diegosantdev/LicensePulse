@@ -7,6 +7,7 @@ node_modules/
 # LicensePulse data
 .licensepulse/
 watchlist.json
+test-integration-watchlist.json
 
 # Test coverage
 coverage/

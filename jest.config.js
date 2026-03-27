@@ -15,5 +15,6 @@ module.exports = {
       lines: 45,
       statements: 45
     }
-  }
+  },
+  maxWorkers: 1
 };
