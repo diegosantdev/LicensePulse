@@ -260,7 +260,7 @@ No breaking changes. All v1.0 commands work identically.
 4. **Version cutoff:** Heuristic-based, may not be 100% accurate
 
 ### Planned Improvements
-See [ROADMAP.md](./ROADMAP.md) for future enhancements.
+See the Roadmap section in [README.md](./README.md) for future enhancements.
 
 ---
 
@@ -268,8 +268,7 @@ See [ROADMAP.md](./ROADMAP.md) for future enhancements.
 
 ### Getting Help
 - Documentation: [README.md](./README.md)
-- Examples: [EXAMPLES.md](./EXAMPLES.md)
-- Quick Start: [QUICK_START.md](./QUICK_START.md)
+- Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ### Reporting Issues
 - GitHub Issues: https://github.com/diegosantdev/licensepulse/issues
