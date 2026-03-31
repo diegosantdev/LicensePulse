@@ -281,6 +281,6 @@ See the Roadmap section in [README.md](./README.md) for future enhancements.
 
 ---
 
-**Last Updated:** March 26, 2026  
+**Last Updated:** March 31, 2026  
 **Current Version:** 1.2.0  
 **License:** MIT
