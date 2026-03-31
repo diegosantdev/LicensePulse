@@ -1,22 +1,25 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const SNAPSHOTS_DIR = '.licensepulse/snapshots';
+function getSnapshotsDir() {
+  return process.env.LICENSEPULSE_SNAPSHOTS_DIR || '.licensepulse/snapshots';
+}
 
 function getSnapshotFilename(repoId) {
   return repoId.replace('/', '-') + '.json';
 }
 
 function getSnapshotPath(repoId) {
-  return path.join(SNAPSHOTS_DIR, getSnapshotFilename(repoId));
+  return path.join(getSnapshotsDir(), getSnapshotFilename(repoId));
 }
 
 async function ensureSnapshotsDir() {
   try {
     const path = require('path');
-    const baseDir = path.dirname(SNAPSHOTS_DIR);
+    const dir = getSnapshotsDir();
+    const baseDir = path.dirname(dir);
     await fs.mkdir(baseDir, { recursive: true });
-    await fs.mkdir(SNAPSHOTS_DIR, { recursive: true });
+    await fs.mkdir(dir, { recursive: true });
   } catch (error) {
     // Ignore errors if directory already exists
   }
@@ -57,12 +60,13 @@ async function saveSnapshot(repoId, licenseData) {
 async function getAllSnapshots() {
   try {
     await ensureSnapshotsDir();
-    const files = await fs.readdir(SNAPSHOTS_DIR);
+    const dir = getSnapshotsDir();
+    const files = await fs.readdir(dir);
 
     const snapshots = [];
     for (const file of files) {
       if (file.endsWith('.json')) {
-        const filePath = path.join(SNAPSHOTS_DIR, file);
+        const filePath = path.join(dir, file);
         const data = await fs.readFile(filePath, 'utf8');
         snapshots.push(JSON.parse(data));
       }

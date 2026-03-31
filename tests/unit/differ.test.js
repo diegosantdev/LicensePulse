@@ -1,3 +1,4 @@
+process.env.LICENSEPULSE_SNAPSHOTS_DIR = '.licensepulse/snapshots-unit';
 const fs = require('fs').promises;
 const path = require('path');
 const {
@@ -9,7 +10,7 @@ const {
   getSnapshotPath
 } = require('../../src/differ');
 
-const SNAPSHOTS_DIR = '.licensepulse/snapshots';
+const SNAPSHOTS_DIR = process.env.LICENSEPULSE_SNAPSHOTS_DIR;
 
 describe('Differ', () => {
   beforeEach(async () => {

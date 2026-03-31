@@ -1,3 +1,4 @@
+process.env.LICENSEPULSE_SNAPSHOTS_DIR = '.licensepulse/snapshots-integration';
 const Watchlist = require('../../src/watchlist');
 const { fetchLicense } = require('../../src/watcher');
 const { checkAndUpdate, loadSnapshot } = require('../../src/differ');
@@ -9,7 +10,7 @@ const axios = require('axios');
 
 describe('Integration: Complete Workflow', () => {
   const testWatchlistPath = 'test-integration-watchlist.json';
-  const snapshotsDir = '.licensepulse/snapshots';
+  const snapshotsDir = process.env.LICENSEPULSE_SNAPSHOTS_DIR;
 
   beforeAll(() => {
     process.env.GITHUB_TOKEN = 'test-token';
